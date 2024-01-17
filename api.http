@@ -2,14 +2,34 @@ GET http://localhost:1000/cards
 # gets and filters the cards
 ###
 
-POST http://localhost:1000/cards/create
+GET http://localhost:1000/cards?type=Spell&id=50
+# search
+###
+
+POST http://localhost:1000/cards/create HTTP/1.1
+content-type: application/json
+
+{
+    "name": "ash",
+    "power": 7000,
+    "cost": 1 
+}
+
 # create new card
 ###
 
-PUT http://localhost:1000/cards/:id
+PUT http://localhost:1000/cards/1 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "hello",
+    "cost": 5
+}
+
 # edits the cards
 ###
 
-DELETE http://localhost:1000/cards/:id
+DELETE http://localhost:1000/cards/123
 # deletes cards
 ###
+
