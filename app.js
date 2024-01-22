@@ -94,20 +94,29 @@ app.post("/cards/create", (req, res) => {
   fs.readFile(cardFilePath, "utf8", (err, data) => {
     if (err) res.send("error reading file", err);
     try {
+      let newCard;
       const jsonCards = JSON.parse(data);
-      id = jsonCards.cards[jsonCards.cards.length - 1].id + 1;
+      id = req.body.id ? req.body.id : 1
+      console.log("id: ", id)
       let doupId = jsonCards.cards.find((card) => card.id === id);
+      console.log("doupID: ",doupId)
       while (doupId) {
         id++;
+        doupId = jsonCards.cards.find((card) => card.id === id);
+        console.log(id)
       }
-      const newCard = { id: id, ...req.body };
-      jsonCards.cards.push(newCard);
+      newCard = { ...req.body, id: id };
+      jsonCards.cards.splice(id -1, 0, newCard);
       fs.writeFile(cardFilePath, JSON.stringify(jsonCards, null, 2), (err) => {
         if (err) console.error("error writing file", err);
       });
-      res.send(`your card was added to the deck: ${JSON.stringify(newCard)}`);
+      let successMsg = `your card was added to the deck: ${JSON.stringify(newCard)}`
+      if (req.body.id !== id) {
+        msg = "that id was already taken. " + successMsg;
+      }
+      res.send(msg);
     } catch (parseError) {
-      res.send("Error parsing JSON data", parseError);
+      res.status(404).send("Error parsing JSON data");
     }
   });
 });
@@ -135,7 +144,7 @@ app.put("/cards/:id", (req, res) => {
       );
     });
   } catch (parseErr) {
-    res.send("Error parsing JSON data", parseErr);
+    res.status(404).send("Error parsing JSON data", parseErr);
   }
 });
 
@@ -165,7 +174,7 @@ app.delete("/cards/:id", (req, res) => {
       }
     });
   } catch (parseErr) {
-    res.send("Error parsing JSON data", parseErr);
+    res.status(404).send("Error parsing JSON data", parseErr);
   }
 });
 

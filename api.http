@@ -2,8 +2,8 @@ POST http://localhost:1000/getToken
 Content-Type: application/json
 
 {
-    "username": "Asher",
-    "password": "word"
+    "username": "guest",
+    "password": "password"
 }
 ###
 
@@ -19,7 +19,8 @@ POST http://localhost:1000/cards/create HTTP/1.1
 content-type: application/json
 
 {
-    "name": "ash",
+    "id": 1,
+    "name": "silly snake",
     "power": 7000,
     "cost": 1 
 }
@@ -31,7 +32,7 @@ PUT http://localhost:1000/cards/1 HTTP/1.1
 content-type: application/json
 
 {
-    "name": "hello",
+    "name": "newName",
     "cost": 5
 }
 
