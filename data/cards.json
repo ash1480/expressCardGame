@@ -1240,16 +1240,35 @@
       "cost": 3
     },
     {
+      "id": 123,
+      "name": "Flamestrike Archer",
+      "set": "Expansion Pack",
+      "cardNumber": 23,
+      "type": "Creature",
+      "power": 3600,
+      "toughness": 3100,
+      "rarity": "Epic",
+      "cost": 2
+    },
+    {
       "id": 124,
-      "name": "ash",
-      "power": 7000,
-      "cost": 1
+      "name": "Soul Reaver",
+      "set": "Expansion Pack",
+      "cardNumber": 24,
+      "type": "Creature",
+      "power": 6500,
+      "toughness": 6000,
+      "rarity": "Rare",
+      "cost": 6
     },
     {
       "id": 125,
-      "name": "ash",
-      "power": 7000,
-      "cost": 1
+      "name": "Dark Ritual",
+      "set": "Expansion Pack",
+      "cardNumber": 25,
+      "type": "Spell",
+      "rarity": "Common",
+      "cost": 2
     }
   ]
 }

@@ -1,15 +1,38 @@
 const express = require("express");
 const port = 1000;
 
+const jwt = require("jsonwebtoken");
+const { expressjwt } = require("express-jwt");
+
 const app = express();
 const fs = require("fs");
 const path = require("path");
+
 app.use(express.json());
+require("dotenv").config();
 
 const userData = require("./data/users.json");
 const cardData = require("./data/cards.json");
+const secret = process.env.SECRET;
+
 let cardFilePath = path.join(__dirname, "data/cards.json");
+let currUser;
 let id;
+
+//check auth
+const checkAuth = expressjwt({ secret: secret, algorithms: ["HS256"] });
+
+// function to send new jwt key
+const authKey = (username) => {
+  if (currUser) {
+    const token = jwt.sign({ username: username }, secret, {
+      algorithm: "HS256",
+      expiresIn: "10s",
+    });
+    return token;
+  }
+  return "please log in";
+};
 
 //serch cards function
 const searchCards = (req, currentMatchs, currSearch) => {
@@ -18,7 +41,6 @@ const searchCards = (req, currentMatchs, currSearch) => {
   currentMatchs.map((element) => {
     const currValue = String(element[currSearch]);
     const searchParams = query[currSearch];
-    console.log(currValue, searchParams);
     if (currValue === searchParams) {
       cards.push(element);
     }
@@ -26,9 +48,36 @@ const searchCards = (req, currentMatchs, currSearch) => {
   return cards;
 };
 
-// home endpoint
-app.get("/", (req, res) => {
-  res.send("Welcome");
+// auth endpoint
+app.post("/getToken", (req, res, next) => {
+  const { username, password } = req.body;
+  const user = userData.users.find((user) => user.username === username);
+  if (!user || user.password !== password) {
+    return res.status(401).json({ errorMessage: "username or password incorect" });
+  }
+  currUser = { username: username };
+  res.send(`you're logged in`)
+  next();
+});
+
+// auth middleware
+app.use((req, res, next) => {
+  console.log(currUser)
+  if (!currUser) {
+    res.send("you have to login at /getToken to accsess that");
+  } else {
+    const token = authKey(currUser.username);
+    req.headers.authorization = `bearer ${token}`;
+    if (token) {
+      checkAuth(req, res, (err) => {
+        if (err) {
+          res.status(401).json({ message: "Invalid token", err });
+        } else {
+          next()
+        }
+      });
+    }
+  }
 });
 
 // search cards endpoint
@@ -78,7 +127,6 @@ app.put("/cards/:id", (req, res) => {
       listOfChanges.forEach((change) => {
         currCard[change] = userChanges[change];
       });
-      console.log(currCard);
       fs.writeFile(cardFilePath, JSON.stringify(jsonCards, null, 2), (err) => {
         if (err) res.status(err).send("error writing file");
       });
@@ -104,7 +152,6 @@ app.delete("/cards/:id", (req, res) => {
       let currCard = jsonCards.cards.find(({ id }) => id === cardId);
       if (currCard) {
         jsonCards.cards.splice(currCardIndex, 1);
-        console.log(currCard);
         fs.writeFile(
           cardFilePath,
           JSON.stringify(jsonCards, null, 2),

@@ -1,3 +1,12 @@
+POST http://localhost:1000/getToken
+Content-Type: application/json
+
+{
+    "username": "Asher",
+    "password": "word"
+}
+###
+
 GET http://localhost:1000/cards
 # gets and filters the cards
 ###
@@ -29,7 +38,7 @@ content-type: application/json
 # edits the cards
 ###
 
-DELETE http://localhost:1000/cards/123
+DELETE http://localhost:1000/cards/100
 # deletes cards
 ###
 
